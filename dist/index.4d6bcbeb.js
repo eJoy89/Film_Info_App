@@ -557,7 +557,172 @@ function hmrAccept(bundle, id) {
 }
 
 },{}],"gLLPy":[function(require,module,exports) {
+var parcelHelpers = require("@parcel/transformer-js/src/esmodule-helpers.js");
+var _app = require("./App");
+var _appDefault = parcelHelpers.interopDefault(_app);
+var _index = require("./routes/index");
+var _indexDefault = parcelHelpers.interopDefault(_index);
+const root = document.querySelector("#root");
+root.append(new (0, _appDefault.default)().el);
+(0, _indexDefault.default)();
 
-},{}]},["e11Rl","gLLPy"], "gLLPy", "parcelRequirec106")
+},{"./App":"2kQhy","@parcel/transformer-js/src/esmodule-helpers.js":"gkKU3","./routes/index":"3L9mC"}],"2kQhy":[function(require,module,exports) {
+var parcelHelpers = require("@parcel/transformer-js/src/esmodule-helpers.js");
+parcelHelpers.defineInteropFlag(exports);
+var _cho = require("./core/cho");
+class App extends (0, _cho.Component) {
+    render() {
+        const routerView = document.createElement("router-view");
+        this.el.append(routerView);
+    }
+}
+exports.default = App;
+
+},{"./core/cho":"cUbqm","@parcel/transformer-js/src/esmodule-helpers.js":"gkKU3"}],"cUbqm":[function(require,module,exports) {
+///// Component /////
+var parcelHelpers = require("@parcel/transformer-js/src/esmodule-helpers.js");
+parcelHelpers.defineInteropFlag(exports);
+parcelHelpers.export(exports, "Component", ()=>Component);
+parcelHelpers.export(exports, "createRouter", ()=>createRouter);
+///// Store /////
+parcelHelpers.export(exports, "Store", ()=>Store);
+class Component {
+    constructor(payload = {}){
+        const { tagName ="div" , props ={} , state ={}  } = payload;
+        this.el = document.createElement(tagName) // 컴포넌트의 최상위 요소
+        ;
+        this.props = props // 컴포넌트가 사용될 때 부모 컴포넌트에서 받는 데이터
+        ;
+        this.state = state // 컴포넌트 안에서 사용할 데이터
+        ;
+        this.render();
+    }
+    render() {
+    // ...
+    }
+}
+///// Router /////
+// 페이지 렌더링!
+function routeRender(routes) {
+    // 접속할 때 해시 모드가 아니면(해시가 없으면) /#/로 리다이렉트!
+    if (!location.hash) history.replaceState(null, "", "/#/") // (상태, 제목, 주소)
+    ;
+    const routerView = document.querySelector("router-view");
+    const [hash, queryString = ""] = location.hash.split("?") // 물음표를 기준으로 해시 정보와 쿼리스트링을 구분
+    ;
+    // 1) 쿼리스트링을 객체로 변환해 히스토리의 상태에 저장!
+    const query = queryString.split("&").reduce((acc, cur)=>{
+        const [key, value] = cur.split("=");
+        acc[key] = value;
+        return acc;
+    }, {});
+    history.replaceState(query, "") // (상태, 제목)
+    ;
+    // 2) 현재 라우트 정보를 찾아서 렌더링!
+    const currentRoute = routes.find((route)=>new RegExp(`${route.path}/?$`).test(hash));
+    routerView.innerHTML = "";
+    routerView.append(new currentRoute.component().el);
+    // 3) 화면 출력 후 스크롤 위치 복구!
+    window.scrollTo(0, 0);
+}
+function createRouter(routes) {
+    // 원하는(필요한) 곳에서 호출할 수 있도록 함수 데이터를 반환!
+    return function() {
+        window.addEventListener("popstate", ()=>{
+            routeRender(routes);
+        });
+        routeRender(routes);
+    };
+}
+class Store {
+    constructor(state){
+        this.state = {} // 상태(데이터)
+        ;
+        this.observers = {};
+        for(const key in state)// 각 상태에 대한 변경 감시(Setter) 설정!
+        Object.defineProperty(this.state, key, {
+            // Getter
+            get: ()=>state[key],
+            // Setter
+            set: (val)=>{
+                state[key] = val;
+                if (Array.isArray(this.observers[key])) this.observers[key].forEach((observer)=>observer(val));
+            }
+        });
+    }
+    // 상태 변경 구독!
+    subscribe(key, cb) {
+        Array.isArray(this.observers[key]) // 이미 등록된 콜백이 있는지 확인!
+         ? this.observers[key].push(cb) // 있으면 새로운 콜백 밀어넣기!
+         : this.observers[key] = [
+            cb
+        ] // 없으면 콜백 배열로 할당!
+        ;
+    // 예시)
+    // observers = {
+    //   구독할상태이름: [실행할콜백1, 실행할콜백2]
+    //   movies: [cb, cb, cb],
+    //   message: [cb]
+    // }
+    }
+}
+
+},{"@parcel/transformer-js/src/esmodule-helpers.js":"gkKU3"}],"gkKU3":[function(require,module,exports) {
+exports.interopDefault = function(a) {
+    return a && a.__esModule ? a : {
+        default: a
+    };
+};
+exports.defineInteropFlag = function(a) {
+    Object.defineProperty(a, "__esModule", {
+        value: true
+    });
+};
+exports.exportAll = function(source, dest) {
+    Object.keys(source).forEach(function(key) {
+        if (key === "default" || key === "__esModule" || dest.hasOwnProperty(key)) return;
+        Object.defineProperty(dest, key, {
+            enumerable: true,
+            get: function() {
+                return source[key];
+            }
+        });
+    });
+    return dest;
+};
+exports.export = function(dest, destName, get) {
+    Object.defineProperty(dest, destName, {
+        enumerable: true,
+        get: get
+    });
+};
+
+},{}],"3L9mC":[function(require,module,exports) {
+var parcelHelpers = require("@parcel/transformer-js/src/esmodule-helpers.js");
+parcelHelpers.defineInteropFlag(exports);
+var _cho = require("../core/cho");
+var _home = require("./Home");
+var _homeDefault = parcelHelpers.interopDefault(_home);
+exports.default = (0, _cho.createRouter)([
+    {
+        path: "#/",
+        component: (0, _homeDefault.default)
+    }
+]);
+
+},{"../core/cho":"cUbqm","@parcel/transformer-js/src/esmodule-helpers.js":"gkKU3","./Home":"0JSNG"}],"0JSNG":[function(require,module,exports) {
+var parcelHelpers = require("@parcel/transformer-js/src/esmodule-helpers.js");
+parcelHelpers.defineInteropFlag(exports);
+var _cho = require("../core/cho");
+class Home extends (0, _cho.Component) {
+    render() {
+        this.el.innerHTML = `
+            <h1>Hello World</h1>
+        `;
+    }
+}
+exports.default = Home;
+
+},{"../core/cho":"cUbqm","@parcel/transformer-js/src/esmodule-helpers.js":"gkKU3"}]},["e11Rl","gLLPy"], "gLLPy", "parcelRequirec106")
 
 //# sourceMappingURL=index.4d6bcbeb.js.map
