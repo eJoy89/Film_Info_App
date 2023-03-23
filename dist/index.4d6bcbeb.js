@@ -692,18 +692,21 @@ var _search = require("../components/Search");
 var _searchDefault = parcelHelpers.interopDefault(_search);
 var _filmList = require("../components/FilmList");
 var _filmListDefault = parcelHelpers.interopDefault(_filmList);
+var _filmListMore = require("../components/FilmListMore");
+var _filmListMoreDefault = parcelHelpers.interopDefault(_filmListMore);
 class Home extends (0, _cho.Component) {
     render() {
         const headline = new (0, _headlineDefault.default)().el;
         const search = new (0, _searchDefault.default)().el;
         const filmList = new (0, _filmListDefault.default)().el;
+        const filmListMore = new (0, _filmListMoreDefault.default)().el;
         this.el.classList.add("container");
-        this.el.append(headline, search, filmList);
+        this.el.append(headline, search, filmList, filmListMore);
     }
 }
 exports.default = Home;
 
-},{"@parcel/transformer-js/src/esmodule-helpers.js":"gkKU3","../components/Headline":"gaVgo","../core/cho":"cUbqm","../components/Search":"jqPPz","../components/FilmList":"jmTI6"}],"gaVgo":[function(require,module,exports) {
+},{"@parcel/transformer-js/src/esmodule-helpers.js":"gkKU3","../components/Headline":"gaVgo","../core/cho":"cUbqm","../components/Search":"jqPPz","../components/FilmList":"jmTI6","../components/FilmListMore":"hO6qD"}],"gaVgo":[function(require,module,exports) {
 var parcelHelpers = require("@parcel/transformer-js/src/esmodule-helpers.js");
 parcelHelpers.defineInteropFlag(exports);
 var _cho = require("../core/cho");
@@ -765,20 +768,20 @@ var _cho = require("../core/cho");
 const store = new (0, _cho.Store)({
     searchText: "",
     page: 1,
+    pageMax: 1,
     films: []
 });
 exports.default = store;
 const searchFilms = async (page)=>{
-    if (page === 1) {
-        store.state.page = 1;
-        store.state.films = [];
-    }
+    store.state.page = page;
+    if (page === 1) store.state.films = [];
     const res = await fetch(`https://www.omdbapi.com/?apikey=7035c60c&s=${store.state.searchText}&page=${page}`);
-    const { Search  } = await res.json();
+    const { Search , totalResults  } = await res.json();
     store.state.films = [
         ...store.state.films,
         ...Search
     ];
+    store.state.pageMax = Math.ceil(Number(totalResults) / 10);
 };
 
 },{"../core/cho":"cUbqm","@parcel/transformer-js/src/esmodule-helpers.js":"gkKU3"}],"jmTI6":[function(require,module,exports) {
@@ -841,6 +844,34 @@ class FilmItem extends (0, _cho.Component) {
 }
 exports.default = FilmItem;
 
-},{"../core/cho":"cUbqm","@parcel/transformer-js/src/esmodule-helpers.js":"gkKU3"}]},["e11Rl","gLLPy"], "gLLPy", "parcelRequirec106")
+},{"../core/cho":"cUbqm","@parcel/transformer-js/src/esmodule-helpers.js":"gkKU3"}],"hO6qD":[function(require,module,exports) {
+var parcelHelpers = require("@parcel/transformer-js/src/esmodule-helpers.js");
+parcelHelpers.defineInteropFlag(exports);
+var _cho = require("../core/cho");
+var _film = require("../store/film");
+var _filmDefault = parcelHelpers.interopDefault(_film);
+class FilmListMore extends (0, _cho.Component) {
+    constructor(){
+        super({
+            tagName: "button"
+        });
+        (0, _filmDefault.default).subscribe("pageMax", ()=>{
+            const { page , pageMax  } = (0, _filmDefault.default).state;
+            if (pageMax > page) // 총 페이지의 수가, 현재 페이지보다 많으면 더 보이기 버튼에 hide를 지워 버튼을 보이게
+            this.el.classList.remove("hide");
+            else this.el.classList.add("hide");
+        });
+    }
+    render() {
+        this.el.classList.add("btn", "view-more", "hide");
+        this.el.textContent = "View more...";
+        this.el.addEventListener("click", async ()=>{
+            await (0, _film.searchFilms)((0, _filmDefault.default).state.page + 1);
+        });
+    }
+}
+exports.default = FilmListMore;
+
+},{"../core/cho":"cUbqm","../store/film":"iWLCk","@parcel/transformer-js/src/esmodule-helpers.js":"gkKU3"}]},["e11Rl","gLLPy"], "gLLPy", "parcelRequirec106")
 
 //# sourceMappingURL=index.4d6bcbeb.js.map
