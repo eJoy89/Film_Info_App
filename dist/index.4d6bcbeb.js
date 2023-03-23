@@ -690,17 +690,20 @@ var _headline = require("../components/Headline");
 var _headlineDefault = parcelHelpers.interopDefault(_headline);
 var _search = require("../components/Search");
 var _searchDefault = parcelHelpers.interopDefault(_search);
+var _filmList = require("../components/FilmList");
+var _filmListDefault = parcelHelpers.interopDefault(_filmList);
 class Home extends (0, _cho.Component) {
     render() {
         const headline = new (0, _headlineDefault.default)().el;
         const search = new (0, _searchDefault.default)().el;
+        const filmList = new (0, _filmListDefault.default)().el;
         this.el.classList.add("container");
-        this.el.append(headline, search);
+        this.el.append(headline, search, filmList);
     }
 }
 exports.default = Home;
 
-},{"@parcel/transformer-js/src/esmodule-helpers.js":"gkKU3","../components/Headline":"gaVgo","../core/cho":"cUbqm","../components/Search":"jqPPz"}],"gaVgo":[function(require,module,exports) {
+},{"@parcel/transformer-js/src/esmodule-helpers.js":"gkKU3","../components/Headline":"gaVgo","../core/cho":"cUbqm","../components/Search":"jqPPz","../components/FilmList":"jmTI6"}],"gaVgo":[function(require,module,exports) {
 var parcelHelpers = require("@parcel/transformer-js/src/esmodule-helpers.js");
 parcelHelpers.defineInteropFlag(exports);
 var _cho = require("../core/cho");
@@ -754,7 +757,7 @@ class Search extends (0, _cho.Component) {
 }
 exports.default = Search;
 
-},{"../core/cho":"cUbqm","@parcel/transformer-js/src/esmodule-helpers.js":"gkKU3","../store/film":"iWLCk"}],"iWLCk":[function(require,module,exports) {
+},{"../core/cho":"cUbqm","../store/film":"iWLCk","@parcel/transformer-js/src/esmodule-helpers.js":"gkKU3"}],"iWLCk":[function(require,module,exports) {
 var parcelHelpers = require("@parcel/transformer-js/src/esmodule-helpers.js");
 parcelHelpers.defineInteropFlag(exports);
 parcelHelpers.export(exports, "searchFilms", ()=>searchFilms);
@@ -766,10 +769,77 @@ const store = new (0, _cho.Store)({
 });
 exports.default = store;
 const searchFilms = async (page)=>{
+    if (page === 1) {
+        store.state.page = 1;
+        store.state.films = [];
+    }
     const res = await fetch(`https://www.omdbapi.com/?apikey=7035c60c&s=${store.state.searchText}&page=${page}`);
-    const json = await res.json();
-    console.log(json);
+    const { Search  } = await res.json();
+    store.state.films = [
+        ...store.state.films,
+        ...Search
+    ];
 };
+
+},{"../core/cho":"cUbqm","@parcel/transformer-js/src/esmodule-helpers.js":"gkKU3"}],"jmTI6":[function(require,module,exports) {
+var parcelHelpers = require("@parcel/transformer-js/src/esmodule-helpers.js");
+parcelHelpers.defineInteropFlag(exports);
+var _cho = require("../core/cho");
+var _film = require("../store/film");
+var _filmDefault = parcelHelpers.interopDefault(_film);
+var _filmItem = require("./FilmItem");
+var _filmItemDefault = parcelHelpers.interopDefault(_filmItem);
+class FilmList extends (0, _cho.Component) {
+    constructor(){
+        super();
+        (0, _filmDefault.default).subscribe("films", ()=>{
+            this.render();
+        });
+    }
+    render() {
+        this.el.classList.add("film-list");
+        this.el.innerHTML = /* html */ `
+            <div class="films"></div>
+        `;
+        const filmEl = this.el.querySelector(".films");
+        filmEl.append(...(0, _filmDefault.default).state.films.map((film)=>{
+            return new (0, _filmItemDefault.default)({
+                film: film
+            }).el;
+        }));
+    }
+}
+exports.default = FilmList;
+
+},{"../core/cho":"cUbqm","../store/film":"iWLCk","@parcel/transformer-js/src/esmodule-helpers.js":"gkKU3","./FilmItem":"7kR8z"}],"7kR8z":[function(require,module,exports) {
+var parcelHelpers = require("@parcel/transformer-js/src/esmodule-helpers.js");
+parcelHelpers.defineInteropFlag(exports);
+var _cho = require("../core/cho");
+class FilmItem extends (0, _cho.Component) {
+    constructor(props){
+        super({
+            props,
+            tagName: "a"
+        });
+    }
+    render() {
+        const { film  } = this.props;
+        this.el.setAttribute("href", `#/file?if=${film.imdbID}`);
+        this.el.classList.add("film");
+        this.el.style.backgroundImage = `url(${film.Poster})`;
+        this.el.innerHTML = /* html */ `
+            <div class="info">
+                <div class="year">
+                    ${film.Year}
+                </div>
+                <div class="title">
+                    ${film.Title}
+                </div>
+            </div>
+        `;
+    }
+}
+exports.default = FilmItem;
 
 },{"../core/cho":"cUbqm","@parcel/transformer-js/src/esmodule-helpers.js":"gkKU3"}]},["e11Rl","gLLPy"], "gLLPy", "parcelRequirec106")
 
