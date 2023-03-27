@@ -570,63 +570,55 @@ root.append(new (0, _appDefault.default)().el);
 var parcelHelpers = require("@parcel/transformer-js/src/esmodule-helpers.js");
 parcelHelpers.defineInteropFlag(exports);
 var _cho = require("./core/cho");
+var _header = require("./components/Header");
+var _headerDefault = parcelHelpers.interopDefault(_header);
+var _footer = require("./components/Footer");
+var _footerDefault = parcelHelpers.interopDefault(_footer);
 class App extends (0, _cho.Component) {
     render() {
+        const Head = new (0, _headerDefault.default)().el;
+        const Foot = new (0, _footerDefault.default)().el;
         const routerView = document.createElement("router-view");
-        this.el.append(routerView);
+        this.el.append(Head, routerView, Foot);
     }
 }
 exports.default = App;
 
-},{"./core/cho":"cUbqm","@parcel/transformer-js/src/esmodule-helpers.js":"gkKU3"}],"cUbqm":[function(require,module,exports) {
-///// Component /////
+},{"./core/cho":"cUbqm","@parcel/transformer-js/src/esmodule-helpers.js":"gkKU3","./components/Header":"hsJbF","./components/Footer":"8pPOA"}],"cUbqm":[function(require,module,exports) {
+// Component
 var parcelHelpers = require("@parcel/transformer-js/src/esmodule-helpers.js");
 parcelHelpers.defineInteropFlag(exports);
 parcelHelpers.export(exports, "Component", ()=>Component);
 parcelHelpers.export(exports, "createRouter", ()=>createRouter);
-///// Store /////
+// Store
 parcelHelpers.export(exports, "Store", ()=>Store);
 class Component {
     constructor(payload = {}){
         const { tagName ="div" , props ={} , state ={}  } = payload;
-        this.el = document.createElement(tagName) // 컴포넌트의 최상위 요소
-        ;
-        this.props = props // 컴포넌트가 사용될 때 부모 컴포넌트에서 받는 데이터
-        ;
-        this.state = state // 컴포넌트 안에서 사용할 데이터
-        ;
+        this.el = document.createElement(tagName);
+        this.props = props;
+        this.state = state;
         this.render();
     }
-    render() {
-    // ...
-    }
+    render() {}
 }
-///// Router /////
-// 페이지 렌더링!
+// Router
 function routeRender(routes) {
-    // 접속할 때 해시 모드가 아니면(해시가 없으면) /#/로 리다이렉트!
-    if (!location.hash) history.replaceState(null, "", "/#/") // (상태, 제목, 주소)
-    ;
+    if (!location.hash) history.replaceState(null, "", "/#/");
     const routerView = document.querySelector("router-view");
-    const [hash, queryString = ""] = location.hash.split("?") // 물음표를 기준으로 해시 정보와 쿼리스트링을 구분
-    ;
-    // 1) 쿼리스트링을 객체로 변환해 히스토리의 상태에 저장!
+    const [hash, queryString = ""] = location.hash.split("?");
     const query = queryString.split("&").reduce((acc, cur)=>{
         const [key, value] = cur.split("=");
         acc[key] = value;
         return acc;
     }, {});
-    history.replaceState(query, "") // (상태, 제목)
-    ;
-    // 2) 현재 라우트 정보를 찾아서 렌더링!
+    history.replaceState(query, "");
     const currentRoute = routes.find((route)=>new RegExp(`${route.path}/?$`).test(hash));
     routerView.innerHTML = "";
     routerView.append(new currentRoute.component().el);
-    // 3) 화면 출력 후 스크롤 위치 복구!
     window.scrollTo(0, 0);
 }
 function createRouter(routes) {
-    // 원하는(필요한) 곳에서 호출할 수 있도록 함수 데이터를 반환!
     return function() {
         window.addEventListener("popstate", ()=>{
             routeRender(routes);
@@ -636,34 +628,20 @@ function createRouter(routes) {
 }
 class Store {
     constructor(state){
-        this.state = {} // 상태(데이터)
-        ;
+        this.state = {};
         this.observers = {};
-        for(const key in state)// 각 상태에 대한 변경 감시(Setter) 설정!
-        Object.defineProperty(this.state, key, {
-            // Getter
+        for(const key in state)Object.defineProperty(this.state, key, {
             get: ()=>state[key],
-            // Setter
             set: (val)=>{
                 state[key] = val;
                 if (Array.isArray(this.observers[key])) this.observers[key].forEach((observer)=>observer(val));
             }
         });
     }
-    // 상태 변경 구독!
     subscribe(key, cb) {
-        Array.isArray(this.observers[key]) // 이미 등록된 콜백이 있는지 확인!
-         ? this.observers[key].push(cb) // 있으면 새로운 콜백 밀어넣기!
-         : this.observers[key] = [
+        Array.isArray(this.observers[key]) ? this.observers[key].push(cb) : this.observers[key] = [
             cb
-        ] // 없으면 콜백 배열로 할당!
-        ;
-    // 예시)
-    // observers = {
-    //   구독할상태이름: [실행할콜백1, 실행할콜백2]
-    //   movies: [cb, cb, cb],
-    //   message: [cb]
-    // }
+        ];
     }
 }
 
@@ -697,31 +675,496 @@ exports.export = function(dest, destName, get) {
     });
 };
 
-},{}],"3L9mC":[function(require,module,exports) {
+},{}],"hsJbF":[function(require,module,exports) {
+var parcelHelpers = require("@parcel/transformer-js/src/esmodule-helpers.js");
+parcelHelpers.defineInteropFlag(exports);
+var _cho = require("../core/cho");
+var _about = require("../store/about");
+var _aboutDefault = parcelHelpers.interopDefault(_about);
+class Header extends (0, _cho.Component) {
+    constructor(){
+        super({
+            tagName: "header",
+            state: {
+                menus: [
+                    {
+                        name: "Search",
+                        href: "#/"
+                    },
+                    {
+                        name: "Flim",
+                        href: "#/film?id=tt4520988"
+                    },
+                    {
+                        name: "About",
+                        href: "#/about"
+                    }
+                ]
+            }
+        });
+        window.addEventListener("popstate", ()=>{
+            this.render();
+        });
+    }
+    render() {
+        const { photo  } = (0, _aboutDefault.default).state;
+        this.el.innerHTML = /* html */ `
+            <a 
+                href='#/' class="logo">
+                <span>OMDbAPI</span>    
+                .COM
+            </a>
+
+            <nav>
+                <ul>
+                    ${this.state.menus.map((menu)=>{
+            const href = menu.href.split("?")[0];
+            const hash = location.hash.split("?")[0];
+            const isActive = href === hash;
+            return /* html */ `
+                            <li>
+                                <a 
+                                href="${menu.href}"
+                                class="${isActive ? "active" : ""}"
+                                >
+                                    ${menu.name}
+                                </a>
+                            </li>
+                        `;
+        }).join("")}
+                </ul>
+            </nav>
+            <a href="#/about" class="main_logo">
+                <img src="${photo}" alt="main_logo">
+            </a>
+        `;
+    }
+}
+exports.default = Header;
+
+},{"../core/cho":"cUbqm","../store/about":"4RAJO","@parcel/transformer-js/src/esmodule-helpers.js":"gkKU3"}],"4RAJO":[function(require,module,exports) {
+var parcelHelpers = require("@parcel/transformer-js/src/esmodule-helpers.js");
+parcelHelpers.defineInteropFlag(exports);
+var _cho = require("../core/cho");
+exports.default = new (0, _cho.Store)({
+    photo: "https://i.ibb.co/h8v2tqN/4778bcbcf6e221e9005dd50904276ccf-sticker.png",
+    name: "Cho / Yunjae Cho",
+    email: "cho89@live.co.kr",
+    github: "https://github.com/eJoy89?tab=repositories",
+    notion: "https://ripe-dogsled-628.notion.site/Programme-27541e9ed6754a96932ab8cc378d8401"
+});
+
+},{"../core/cho":"cUbqm","@parcel/transformer-js/src/esmodule-helpers.js":"gkKU3"}],"8pPOA":[function(require,module,exports) {
+var parcelHelpers = require("@parcel/transformer-js/src/esmodule-helpers.js");
+parcelHelpers.defineInteropFlag(exports);
+var _cho = require("../core/cho");
+var _about = require("../store/about");
+var _aboutDefault = parcelHelpers.interopDefault(_about);
+class Footer extends (0, _cho.Component) {
+    constructor(){
+        super({
+            tagName: "footer"
+        });
+    }
+    render() {
+        const { github , notion  } = (0, _aboutDefault.default).state;
+        this.el.innerHTML = /* html */ `
+            <div>
+                <a href="${github}">
+                    Github Repository
+                </a>
+            </div>
+            <div>
+                <a href="${notion}">
+                    ${new Date().getFullYear()}
+                    Cho
+                </a>
+            </div>
+        `;
+    }
+}
+exports.default = Footer;
+
+},{"../core/cho":"cUbqm","../store/about":"4RAJO","@parcel/transformer-js/src/esmodule-helpers.js":"gkKU3"}],"3L9mC":[function(require,module,exports) {
 var parcelHelpers = require("@parcel/transformer-js/src/esmodule-helpers.js");
 parcelHelpers.defineInteropFlag(exports);
 var _cho = require("../core/cho");
 var _home = require("./Home");
 var _homeDefault = parcelHelpers.interopDefault(_home);
+var _film = require("./Film");
+var _filmDefault = parcelHelpers.interopDefault(_film);
+var _about = require("./About");
+var _aboutDefault = parcelHelpers.interopDefault(_about);
+var _notFound = require("./NotFound");
+var _notFoundDefault = parcelHelpers.interopDefault(_notFound);
 exports.default = (0, _cho.createRouter)([
     {
         path: "#/",
         component: (0, _homeDefault.default)
+    },
+    {
+        path: "#/film",
+        component: (0, _filmDefault.default)
+    },
+    {
+        path: "#/about",
+        component: (0, _aboutDefault.default)
+    },
+    {
+        path: ".*",
+        component: (0, _notFoundDefault.default)
     }
 ]);
 
-},{"../core/cho":"cUbqm","@parcel/transformer-js/src/esmodule-helpers.js":"gkKU3","./Home":"0JSNG"}],"0JSNG":[function(require,module,exports) {
+},{"../core/cho":"cUbqm","@parcel/transformer-js/src/esmodule-helpers.js":"gkKU3","./Home":"0JSNG","./Film":"jaMp4","./About":"gdB30","./NotFound":"4fDiL"}],"0JSNG":[function(require,module,exports) {
 var parcelHelpers = require("@parcel/transformer-js/src/esmodule-helpers.js");
 parcelHelpers.defineInteropFlag(exports);
 var _cho = require("../core/cho");
+var _headline = require("../components/Headline");
+var _headlineDefault = parcelHelpers.interopDefault(_headline);
+var _search = require("../components/Search");
+var _searchDefault = parcelHelpers.interopDefault(_search);
+var _filmList = require("../components/FilmList");
+var _filmListDefault = parcelHelpers.interopDefault(_filmList);
+var _filmListMore = require("../components/FilmListMore");
+var _filmListMoreDefault = parcelHelpers.interopDefault(_filmListMore);
 class Home extends (0, _cho.Component) {
     render() {
-        this.el.innerHTML = `
-            <h1>Hello World</h1>
-        `;
+        const headline = new (0, _headlineDefault.default)().el;
+        const search = new (0, _searchDefault.default)().el;
+        const filmList = new (0, _filmListDefault.default)().el;
+        const filmListMore = new (0, _filmListMoreDefault.default)().el;
+        this.el.classList.add("container");
+        this.el.append(headline, search, filmList, filmListMore);
     }
 }
 exports.default = Home;
+
+},{"@parcel/transformer-js/src/esmodule-helpers.js":"gkKU3","../components/Headline":"gaVgo","../core/cho":"cUbqm","../components/Search":"jqPPz","../components/FilmList":"jmTI6","../components/FilmListMore":"hO6qD"}],"gaVgo":[function(require,module,exports) {
+var parcelHelpers = require("@parcel/transformer-js/src/esmodule-helpers.js");
+parcelHelpers.defineInteropFlag(exports);
+var _cho = require("../core/cho");
+class Headline extends (0, _cho.Component) {
+    render() {
+        this.el.classList.add("headline");
+        this.el.innerHTML = /* html */ `
+            <h1>
+                <span>OMDb API</span><br>
+                THE OPEN<br>
+                Film DATABASE
+            </h1>    
+    
+            <p>
+            The OMDb API is a RESTful web service to obtain film information,
+            all content and images on the site are contributed and maintained by our users.<br>
+            If you find this service useful, please consider making a one-time donation or become a patron.
+            </p>
+        `;
+    }
+}
+exports.default = Headline;
+
+},{"../core/cho":"cUbqm","@parcel/transformer-js/src/esmodule-helpers.js":"gkKU3"}],"jqPPz":[function(require,module,exports) {
+var parcelHelpers = require("@parcel/transformer-js/src/esmodule-helpers.js");
+parcelHelpers.defineInteropFlag(exports);
+var _cho = require("../core/cho");
+var _film = require("../store/film");
+var _filmDefault = parcelHelpers.interopDefault(_film);
+class Search extends (0, _cho.Component) {
+    render() {
+        this.el.classList.add("search");
+        this.el.innerHTML = /* html */ `
+          <input value="${(0, _filmDefault.default).state.searchText}" placeholder="Enter the film title to search!" />
+          <button class="btn btn-primary">
+            Search!
+          </button>
+        `;
+        const inputEl = this.el.querySelector("input");
+        inputEl.addEventListener("input", ()=>{
+            (0, _filmDefault.default).state.searchText = inputEl.value;
+        });
+        inputEl.addEventListener("keydown", (event)=>{
+            if (event.key === "Enter" && (0, _filmDefault.default).state.searchText.trim()) (0, _film.searchFilms)(1).then(()=>console.log("keydown Check!"));
+        });
+        const btnEl = this.el.querySelector(".btn");
+        btnEl.addEventListener("click", ()=>{
+            if ((0, _filmDefault.default).state.searchText.trim()) (0, _film.searchFilms)(1).then(()=>console.log("click Check!"));
+        });
+    }
+}
+exports.default = Search;
+
+},{"../core/cho":"cUbqm","../store/film":"iWLCk","@parcel/transformer-js/src/esmodule-helpers.js":"gkKU3"}],"iWLCk":[function(require,module,exports) {
+var parcelHelpers = require("@parcel/transformer-js/src/esmodule-helpers.js");
+parcelHelpers.defineInteropFlag(exports);
+parcelHelpers.export(exports, "searchFilms", ()=>searchFilms);
+parcelHelpers.export(exports, "getFilmDetails", ()=>getFilmDetails);
+var _cho = require("../core/cho");
+const store = new (0, _cho.Store)({
+    searchText: "",
+    page: 1,
+    pageMax: 1,
+    films: [],
+    film: {},
+    loader: false,
+    message: "Search for the film title!"
+});
+exports.default = store;
+const searchFilms = /* async */ (page)=>{
+    store.state.loader = true;
+    store.state.page = page;
+    if (page === 1) {
+        store.state.films = [];
+        store.state.message = "";
+    }
+    // try {
+    //     const res = await fetch(`https://www.omdbapi.com/?apikey=7035c60c&s=${store.state.searchText}&page=${page}`)
+    //     const { Search, totalResults, Response, Error } = await res.json()
+    //     if(Response === 'True'){
+    //         store.state.films = [
+    //             ...store.state.films,
+    //             ...Search
+    //         ]
+    //         store.state.pageMax = Math.ceil(Number(totalResults) / 10)
+    //     } else {
+    //         store.state.message = 'Film not Found!'
+    //     }
+    // } catch (error) {
+    //     console.log('searchFilm eror', error)
+    // } finally {
+    //     // loading
+    //     store.state.loader = false
+    // }
+    return fetch(`https://www.omdbapi.com/?apikey=7035c60c&s=${store.state.searchText}&page=${page}`).then((res)=>res.json()).then(({ Search , totalResults , Response , Error  })=>{
+        if (Response === "True") {
+            store.state.films = [
+                ...store.state.films,
+                ...Search
+            ];
+            store.state.pageMax = Math.ceil(Number(totalResults) / 10);
+        } else store.state.message = "Film not Found!";
+    }).catch((error)=>console.log("searchFilm eror", error)).finally(()=>store.state.loader = false);
+};
+const getFilmDetails = async (id)=>{
+    try {
+        const res = await fetch(`https://omdbapi.com?apikey=7035c60c&i=${id}&plot=full`);
+        store.state.film = await res.json();
+    } catch (error) {
+        console.log("searchFilm eror", error);
+    }
+};
+
+},{"../core/cho":"cUbqm","@parcel/transformer-js/src/esmodule-helpers.js":"gkKU3"}],"jmTI6":[function(require,module,exports) {
+var parcelHelpers = require("@parcel/transformer-js/src/esmodule-helpers.js");
+parcelHelpers.defineInteropFlag(exports);
+var _cho = require("../core/cho");
+var _film = require("../store/film");
+var _filmDefault = parcelHelpers.interopDefault(_film);
+var _filmItem = require("./FilmItem");
+var _filmItemDefault = parcelHelpers.interopDefault(_filmItem);
+class FilmList extends (0, _cho.Component) {
+    constructor(){
+        super();
+        (0, _filmDefault.default).subscribe("films", ()=>{
+            this.render();
+        });
+        (0, _filmDefault.default).subscribe("loader", ()=>{
+            this.render();
+        });
+        (0, _filmDefault.default).subscribe("message", ()=>{
+            this.render();
+        });
+    }
+    render() {
+        this.el.classList.add("film-list");
+        this.el.innerHTML = /* html */ `
+            ${(0, _filmDefault.default).state.message ? `<div class="message">${(0, _filmDefault.default).state.message}</div>` : '<div class="films"></div>'}
+            <div class="loading hide"></div>
+        `;
+        const filmEl = this.el.querySelector(".films");
+        // filmEl가 있을때만 append
+        filmEl?.append(...(0, _filmDefault.default).state.films.map((film)=>{
+            return new (0, _filmItemDefault.default)({
+                film: film
+            }).el;
+        }));
+        const loadingEl = this.el.querySelector(".loading");
+        (0, _filmDefault.default).state.loader ? loadingEl.classList.remove("hide") : loadingEl.classList.add("hide");
+    }
+}
+exports.default = FilmList;
+
+},{"../core/cho":"cUbqm","../store/film":"iWLCk","@parcel/transformer-js/src/esmodule-helpers.js":"gkKU3","./FilmItem":"7kR8z"}],"7kR8z":[function(require,module,exports) {
+var parcelHelpers = require("@parcel/transformer-js/src/esmodule-helpers.js");
+parcelHelpers.defineInteropFlag(exports);
+var _cho = require("../core/cho");
+class FilmItem extends (0, _cho.Component) {
+    constructor(props){
+        super({
+            props,
+            tagName: "a"
+        });
+    }
+    render() {
+        const { film  } = this.props;
+        this.el.setAttribute("href", `#/film?id=${film.imdbID}`);
+        this.el.classList.add("film");
+        this.el.style.backgroundImage = `url(${film.Poster})`;
+        this.el.innerHTML = /* html */ `
+            <div class="info">
+                <div class="year">
+                    ${film.Year}
+                </div>
+                <div class="title">
+                    ${film.Title}
+                </div>
+            </div>
+        `;
+    }
+}
+exports.default = FilmItem;
+
+},{"../core/cho":"cUbqm","@parcel/transformer-js/src/esmodule-helpers.js":"gkKU3"}],"hO6qD":[function(require,module,exports) {
+var parcelHelpers = require("@parcel/transformer-js/src/esmodule-helpers.js");
+parcelHelpers.defineInteropFlag(exports);
+var _cho = require("../core/cho");
+var _film = require("../store/film");
+var _filmDefault = parcelHelpers.interopDefault(_film);
+class FilmListMore extends (0, _cho.Component) {
+    constructor(){
+        super({
+            tagName: "button"
+        });
+        (0, _filmDefault.default).subscribe("pageMax", ()=>{
+            const { page , pageMax  } = (0, _filmDefault.default).state;
+            if (pageMax > page) // 총 페이지의 수가, 현재 페이지보다 많으면 더 보이기 버튼에 hide를 지워 버튼을 보이게
+            this.el.classList.remove("hide");
+            else this.el.classList.add("hide");
+        });
+    }
+    render() {
+        this.el.classList.add("btn", "view-more", "hide");
+        this.el.textContent = "View more...";
+        this.el.addEventListener("click", async ()=>{
+            this.el.classList.add("hide");
+            // 클릭시 page 한개씩(10개 아이탬) 추가
+            await (0, _film.searchFilms)((0, _filmDefault.default).state.page + 1);
+        });
+    }
+}
+exports.default = FilmListMore;
+
+},{"../core/cho":"cUbqm","../store/film":"iWLCk","@parcel/transformer-js/src/esmodule-helpers.js":"gkKU3"}],"jaMp4":[function(require,module,exports) {
+var parcelHelpers = require("@parcel/transformer-js/src/esmodule-helpers.js");
+parcelHelpers.defineInteropFlag(exports);
+var _cho = require("../core/cho");
+var _film = require("../store/film");
+var _filmDefault = parcelHelpers.interopDefault(_film);
+class Film extends (0, _cho.Component) {
+    async render() {
+        this.el.classList.add("container", "the_film");
+        this.el.innerHTML = /* html */ `
+            <div class="poster skeleton"></div>
+            <div class="specs">
+                <div class="title skeleton"></div>
+                <div class="labels skeleton"></div>
+                <div class="plot skeleton"></div>
+            </div>
+        `;
+        await (0, _film.getFilmDetails)(history.state.id);
+        console.log((0, _filmDefault.default).state.film);
+        const { film  } = (0, _filmDefault.default).state;
+        const highQuality = film.Poster.replace("SX300", "SX700");
+        this.el.innerHTML = /* html */ `
+            <div style="background-image: url(${highQuality})" class='poster'></div>
+            <div class="specs">
+                <div class='title'>
+                    ${film.Title}
+                </div>
+                <div class="labels">
+                    <span>${film.Released}</span>
+                    &nbsp;/&nbsp;
+                    <span>${film.Runtime}</span>
+                    &nbsp;/&nbsp;
+                    <span>${film.Country}</span>
+                </div>
+                <div class="plot">
+                    ${film.Plot}
+                </div>
+                <div>
+                    <h3>Ratings</h3>
+                    ${film.Ratings.map((rating)=>{
+            return `<p>${rating.Source} - ${rating.Value}</p>`;
+        }).join("")}
+                </div>
+                <div>
+                    <h3>Actors</h3>
+                    <p>${film.Actors}</p>
+                </div>
+                <div>
+                    <h3>Director</h3>
+                    <p>${film.Director}</p>
+                </div>
+                <div>
+                    <h3>Production</h3>
+                    <p>${film.Production}</p>
+                </div>
+                <div>
+                    <h3>Genre</h3>
+                    <p>${film.Genre}</p>
+                </div>
+            </div>
+        `;
+    }
+}
+exports.default = Film;
+
+},{"../core/cho":"cUbqm","../store/film":"iWLCk","@parcel/transformer-js/src/esmodule-helpers.js":"gkKU3"}],"gdB30":[function(require,module,exports) {
+var parcelHelpers = require("@parcel/transformer-js/src/esmodule-helpers.js");
+parcelHelpers.defineInteropFlag(exports);
+var _cho = require("../core/cho");
+var _about = require("../store/about");
+var _aboutDefault = parcelHelpers.interopDefault(_about);
+class About extends (0, _cho.Component) {
+    render() {
+        const { photo , name , email , github , notion  } = (0, _aboutDefault.default).state;
+        this.el.classList.add("container", "about");
+        this.el.innerHTML = /* html */ `
+            <div style="background-image: url(${photo})" class="photo"></div>
+            <p class="name">${name}</p>
+            <p>
+                <a 
+                    href="https://mail.google.com/mail/?view=cm&fs=1&to=${email}" 
+                    target="_blank">${email}
+                </a>
+            </p>
+            <p>
+                <a href="${github}" target="_blank">Github</a>
+            </p>
+            <p>
+                <a href="${notion}" target="_blank">Notion</a>
+            </p>
+        `;
+    }
+}
+exports.default = About;
+
+},{"../core/cho":"cUbqm","../store/about":"4RAJO","@parcel/transformer-js/src/esmodule-helpers.js":"gkKU3"}],"4fDiL":[function(require,module,exports) {
+var parcelHelpers = require("@parcel/transformer-js/src/esmodule-helpers.js");
+parcelHelpers.defineInteropFlag(exports);
+var _cho = require("../core/cho");
+class NotFound extends (0, _cho.Component) {
+    render() {
+        this.el.classList.add("container", "not_found");
+        this.el.innerHTML = /* html */ `
+            <h1>
+                Sorry...<br>
+                Page Not Found
+            </h1>
+        `;
+    }
+}
+exports.default = NotFound;
 
 },{"../core/cho":"cUbqm","@parcel/transformer-js/src/esmodule-helpers.js":"gkKU3"}]},["e11Rl","gLLPy"], "gLLPy", "parcelRequirec106")
 
