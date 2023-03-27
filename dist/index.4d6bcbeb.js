@@ -923,11 +923,19 @@ var _film = require("../store/film");
 var _filmDefault = parcelHelpers.interopDefault(_film);
 class Film extends (0, _cho.Component) {
     async render() {
+        this.el.classList.add("container", "the_film");
+        this.el.innerHTML = /* html */ `
+            <div class="poster skeleton"></div>
+            <div class="specs">
+                <div class="title skeleton"></div>
+                <div class="labels skeleton"></div>
+                <div class="plot skeleton"></div>
+            </div>
+        `;
         await (0, _film.getFilmDetails)(history.state.id);
         console.log((0, _filmDefault.default).state.film);
         const { film  } = (0, _filmDefault.default).state;
         const highQuality = film.Poster.replace("SX300", "SX700");
-        this.el.classList.add("container", "the_film");
         this.el.innerHTML = /* html */ `
             <div style="background-image: url(${highQuality})" class='poster'></div>
             <div class="specs">
