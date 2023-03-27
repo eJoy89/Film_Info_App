@@ -854,11 +854,11 @@ class Search extends (0, _cho.Component) {
             (0, _filmDefault.default).state.searchText = inputEl.value;
         });
         inputEl.addEventListener("keydown", (event)=>{
-            if (event.key === "Enter" && (0, _filmDefault.default).state.searchText.trim()) (0, _film.searchFilms)(1);
+            if (event.key === "Enter" && (0, _filmDefault.default).state.searchText.trim()) (0, _film.searchFilms)(1).then(()=>console.log("keydown Check!"));
         });
         const btnEl = this.el.querySelector(".btn");
         btnEl.addEventListener("click", ()=>{
-            if ((0, _filmDefault.default).state.searchText.trim()) (0, _film.searchFilms)(1);
+            if ((0, _filmDefault.default).state.searchText.trim()) (0, _film.searchFilms)(1).then(()=>console.log("click Check!"));
         });
     }
 }
@@ -880,16 +880,32 @@ const store = new (0, _cho.Store)({
     message: "Search for the film title!"
 });
 exports.default = store;
-const searchFilms = async (page)=>{
+const searchFilms = /* async */ (page)=>{
     store.state.loader = true;
     store.state.page = page;
     if (page === 1) {
         store.state.films = [];
         store.state.message = "";
     }
-    try {
-        const res = await fetch(`https://www.omdbapi.com/?apikey=7035c60c&s=${store.state.searchText}&page=${page}`);
-        const { Search , totalResults , Response , Error  } = await res.json();
+    // try {
+    //     const res = await fetch(`https://www.omdbapi.com/?apikey=7035c60c&s=${store.state.searchText}&page=${page}`)
+    //     const { Search, totalResults, Response, Error } = await res.json()
+    //     if(Response === 'True'){
+    //         store.state.films = [
+    //             ...store.state.films,
+    //             ...Search
+    //         ]
+    //         store.state.pageMax = Math.ceil(Number(totalResults) / 10)
+    //     } else {
+    //         store.state.message = 'Film not Found!'
+    //     }
+    // } catch (error) {
+    //     console.log('searchFilm eror', error)
+    // } finally {
+    //     // loading
+    //     store.state.loader = false
+    // }
+    return fetch(`https://www.omdbapi.com/?apikey=7035c60c&s=${store.state.searchText}&page=${page}`).then((res)=>res.json()).then(({ Search , totalResults , Response , Error  })=>{
         if (Response === "True") {
             store.state.films = [
                 ...store.state.films,
@@ -897,12 +913,7 @@ const searchFilms = async (page)=>{
             ];
             store.state.pageMax = Math.ceil(Number(totalResults) / 10);
         } else store.state.message = "Film not Found!";
-    } catch (error) {
-        console.log("searchFilm eror", error);
-    } finally{
-        // loading
-        store.state.loader = false;
-    }
+    }).catch((error)=>console.log("searchFilm eror", error)).finally(()=>store.state.loader = false);
 };
 const getFilmDetails = async (id)=>{
     try {

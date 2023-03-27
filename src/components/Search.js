@@ -18,14 +18,14 @@ export default class Search extends Component{
         })
         inputEl.addEventListener('keydown', event => {
             if(event.key === "Enter" && filmStore.state.searchText.trim()){
-                searchFilms(1)
+                searchFilms(1).then(() => console.log('keydown Check!'))
             }
         })
 
         const btnEl = this.el.querySelector('.btn')
         btnEl.addEventListener('click', () => {
             if(filmStore.state.searchText.trim()){
-                searchFilms(1)
+                searchFilms(1).then(() => console.log('click Check!'))
             }
         })
     }
