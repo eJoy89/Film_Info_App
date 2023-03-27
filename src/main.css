@@ -23,6 +23,18 @@ body{
     margin: 0 auto;
     padding: 40px 0;;
 }
+@media(max-width: 1200px) {
+    .container{
+        padding: 40px;
+    }
+}
+@media(max-width: 600px) {
+    .container{
+        padding: 40px 20px;
+    }
+}
+
+
 
 .btn{
     height: 50px;
@@ -95,6 +107,7 @@ body{
 }
 
 
+/* Header */
 header{
     padding: 20px 40px;
     background-color: rgba(14, 17, 27, .9);
@@ -146,7 +159,17 @@ header .main_logo:hover{
 header .main_logo img{
     width: 100%;
 }
-
+@media(max-width: 600px) {
+    header{
+        padding: 14px 20px;
+    }
+    header nav{
+        display: none;
+    }
+    header .main_logo{
+        right: 20px
+    }
+}
 
 /* Footer */
 footer{
@@ -163,7 +186,7 @@ footer a:hover{
 
 
 
-
+/* HeadLine */
 .headline{
     margin-bottom: 40px;
 }
@@ -178,6 +201,11 @@ footer a:hover{
 }
 .headline p{
     color: var(--color-white-30);
+}
+@media (max-width: 600px) {
+    .headline h1{
+        font-size: 60px;
+    }    
 }
 
 
@@ -273,6 +301,7 @@ footer a:hover{
 }
 
 
+/* Film Detail */
 .the_film{
     color: var(--color-white-50);
     display: flex;
@@ -321,6 +350,28 @@ footer a:hover{
     font-family: 'Oswald', sans-serif;
     margin: 24px 0 6px;
 }
+@media (max-width: 1200px) {
+    .the_film{
+        gap: 30px;
+    }
+    .the_film .poster{
+        --width: 300px;
+    }
+}
+@media (max-width: 720px) {
+    .the_film{
+        display: block;
+    }
+    .the_film .poster{
+        height: 600px;
+    }
+    .the_film .title{
+        font-size: 50px;
+        margin-top: 50px;
+    }
+}
+
+
 
 
 /* about page */

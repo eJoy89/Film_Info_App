@@ -24,6 +24,18 @@ body {
   padding: 40px 0;
 }
 
+@media (max-width: 1200px) {
+  .container {
+    padding: 40px;
+  }
+}
+
+@media (max-width: 600px) {
+  .container {
+    padding: 40px 20px;
+  }
+}
+
 .btn {
   height: 50px;
   color: var(--color-white);
@@ -165,6 +177,20 @@ header .main_logo img {
   width: 100%;
 }
 
+@media (max-width: 600px) {
+  header {
+    padding: 14px 20px;
+  }
+
+  header nav {
+    display: none;
+  }
+
+  header .main_logo {
+    right: 20px;
+  }
+}
+
 footer {
   text-align: center;
   padding: 40px 40px 60px;
@@ -196,6 +222,12 @@ footer a:hover {
 
 .headline p {
   color: var(--color-white-30);
+}
+
+@media (max-width: 600px) {
+  .headline h1 {
+    font-size: 60px;
+  }
 }
 
 .search {
@@ -348,6 +380,31 @@ footer a:hover {
   margin: 24px 0 6px;
   font-family: Oswald, sans-serif;
   font-size: 20px;
+}
+
+@media (max-width: 1200px) {
+  .the_film {
+    gap: 30px;
+  }
+
+  .the_film .poster {
+    --width: 300px;
+  }
+}
+
+@media (max-width: 720px) {
+  .the_film {
+    display: block;
+  }
+
+  .the_film .poster {
+    height: 600px;
+  }
+
+  .the_film .title {
+    margin-top: 50px;
+    font-size: 50px;
+  }
 }
 
 .about .photo {
