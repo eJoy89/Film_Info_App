@@ -675,14 +675,20 @@ parcelHelpers.defineInteropFlag(exports);
 var _cho = require("../core/cho");
 var _home = require("./Home");
 var _homeDefault = parcelHelpers.interopDefault(_home);
+var _film = require("./Film");
+var _filmDefault = parcelHelpers.interopDefault(_film);
 exports.default = (0, _cho.createRouter)([
     {
         path: "#/",
         component: (0, _homeDefault.default)
+    },
+    {
+        path: "#/film",
+        component: (0, _filmDefault.default)
     }
 ]);
 
-},{"../core/cho":"cUbqm","@parcel/transformer-js/src/esmodule-helpers.js":"gkKU3","./Home":"0JSNG"}],"0JSNG":[function(require,module,exports) {
+},{"../core/cho":"cUbqm","@parcel/transformer-js/src/esmodule-helpers.js":"gkKU3","./Home":"0JSNG","./Film":"jaMp4"}],"0JSNG":[function(require,module,exports) {
 var parcelHelpers = require("@parcel/transformer-js/src/esmodule-helpers.js");
 parcelHelpers.defineInteropFlag(exports);
 var _cho = require("../core/cho");
@@ -715,13 +721,13 @@ class Headline extends (0, _cho.Component) {
         this.el.classList.add("headline");
         this.el.innerHTML = /* html */ `
             <h1>
-                <span>OMDB API</span><br>
+                <span>OMDb API</span><br>
                 THE OPEN<br>
-                MOVIE DATABASE
+                Film DATABASE
             </h1>    
     
             <p>
-            The OMDb API is a RESTful web service to obtain movie information,
+            The OMDb API is a RESTful web service to obtain film information,
             all content and images on the site are contributed and maintained by our users.<br>
             If you find this service useful, please consider making a one-time donation or become a patron.
             </p>
@@ -740,7 +746,7 @@ class Search extends (0, _cho.Component) {
     render() {
         this.el.classList.add("search");
         this.el.innerHTML = /* html */ `
-          <input placeholder="Enter the movie title to search!" />
+          <input value="${(0, _filmDefault.default).state.searchText}" placeholder="Enter the film title to search!" />
           <button class="btn btn-primary">
             Search!
           </button>
@@ -764,24 +770,49 @@ exports.default = Search;
 var parcelHelpers = require("@parcel/transformer-js/src/esmodule-helpers.js");
 parcelHelpers.defineInteropFlag(exports);
 parcelHelpers.export(exports, "searchFilms", ()=>searchFilms);
+parcelHelpers.export(exports, "getFilmDetails", ()=>getFilmDetails);
 var _cho = require("../core/cho");
 const store = new (0, _cho.Store)({
     searchText: "",
     page: 1,
     pageMax: 1,
-    films: []
+    films: [],
+    film: {},
+    loader: false,
+    message: "Search for the film title!"
 });
 exports.default = store;
 const searchFilms = async (page)=>{
+    store.state.loader = true;
     store.state.page = page;
-    if (page === 1) store.state.films = [];
-    const res = await fetch(`https://www.omdbapi.com/?apikey=7035c60c&s=${store.state.searchText}&page=${page}`);
-    const { Search , totalResults  } = await res.json();
-    store.state.films = [
-        ...store.state.films,
-        ...Search
-    ];
-    store.state.pageMax = Math.ceil(Number(totalResults) / 10);
+    if (page === 1) {
+        store.state.films = [];
+        store.state.message = "";
+    }
+    try {
+        const res = await fetch(`https://www.omdbapi.com/?apikey=7035c60c&s=${store.state.searchText}&page=${page}`);
+        const { Search , totalResults , Response , Error  } = await res.json();
+        if (Response === "True") {
+            store.state.films = [
+                ...store.state.films,
+                ...Search
+            ];
+            store.state.pageMax = Math.ceil(Number(totalResults) / 10);
+        } else store.state.message = "Film not Found!";
+    } catch (error) {
+        console.log("searchFilm eror", error);
+    } finally{
+        // loading
+        store.state.loader = false;
+    }
+};
+const getFilmDetails = async (id)=>{
+    try {
+        const res = await fetch(`https://omdbapi.com?apikey=7035c60c&i=${id}&plot=full`);
+        store.state.film = await res.json();
+    } catch (error) {
+        console.log("searchFilm eror", error);
+    }
 };
 
 },{"../core/cho":"cUbqm","@parcel/transformer-js/src/esmodule-helpers.js":"gkKU3"}],"jmTI6":[function(require,module,exports) {
@@ -798,18 +829,28 @@ class FilmList extends (0, _cho.Component) {
         (0, _filmDefault.default).subscribe("films", ()=>{
             this.render();
         });
+        (0, _filmDefault.default).subscribe("loader", ()=>{
+            this.render();
+        });
+        (0, _filmDefault.default).subscribe("message", ()=>{
+            this.render();
+        });
     }
     render() {
         this.el.classList.add("film-list");
         this.el.innerHTML = /* html */ `
-            <div class="films"></div>
+            ${(0, _filmDefault.default).state.message ? `<div class="message">${(0, _filmDefault.default).state.message}</div>` : '<div class="films"></div>'}
+            <div class="loading hide"></div>
         `;
         const filmEl = this.el.querySelector(".films");
-        filmEl.append(...(0, _filmDefault.default).state.films.map((film)=>{
+        // filmEl가 있을때만 append
+        filmEl?.append(...(0, _filmDefault.default).state.films.map((film)=>{
             return new (0, _filmItemDefault.default)({
                 film: film
             }).el;
         }));
+        const loadingEl = this.el.querySelector(".loading");
+        (0, _filmDefault.default).state.loader ? loadingEl.classList.remove("hide") : loadingEl.classList.add("hide");
     }
 }
 exports.default = FilmList;
@@ -827,7 +868,7 @@ class FilmItem extends (0, _cho.Component) {
     }
     render() {
         const { film  } = this.props;
-        this.el.setAttribute("href", `#/file?if=${film.imdbID}`);
+        this.el.setAttribute("href", `#/film?id=${film.imdbID}`);
         this.el.classList.add("film");
         this.el.style.backgroundImage = `url(${film.Poster})`;
         this.el.innerHTML = /* html */ `
@@ -866,11 +907,70 @@ class FilmListMore extends (0, _cho.Component) {
         this.el.classList.add("btn", "view-more", "hide");
         this.el.textContent = "View more...";
         this.el.addEventListener("click", async ()=>{
+            this.el.classList.add("hide");
+            // 클릭시 page 한개씩(10개 아이탬) 추가
             await (0, _film.searchFilms)((0, _filmDefault.default).state.page + 1);
         });
     }
 }
 exports.default = FilmListMore;
+
+},{"../core/cho":"cUbqm","../store/film":"iWLCk","@parcel/transformer-js/src/esmodule-helpers.js":"gkKU3"}],"jaMp4":[function(require,module,exports) {
+var parcelHelpers = require("@parcel/transformer-js/src/esmodule-helpers.js");
+parcelHelpers.defineInteropFlag(exports);
+var _cho = require("../core/cho");
+var _film = require("../store/film");
+var _filmDefault = parcelHelpers.interopDefault(_film);
+class Film extends (0, _cho.Component) {
+    async render() {
+        await (0, _film.getFilmDetails)(history.state.id);
+        console.log((0, _filmDefault.default).state.film);
+        const { film  } = (0, _filmDefault.default).state;
+        const highQuality = film.Poster.replace("SX300", "SX700");
+        this.el.classList.add("container", "the_film");
+        this.el.innerHTML = /* html */ `
+            <div style="background-image: url(${highQuality})" class='poster'></div>
+            <div class="specs">
+                <div class='title'>
+                    ${film.Title}
+                </div>
+                <div class="labels">
+                    <span>${film.Released}</span>
+                    &nbsp;/&nbsp;
+                    <span>${film.Runtime}</span>
+                    &nbsp;/&nbsp;
+                    <span>${film.Country}</span>
+                </div>
+                <div class="plot">
+                    ${film.Plot}
+                </div>
+                <div>
+                    <h3>Ratings</h3>
+                    ${film.Ratings.map((rating)=>{
+            return `<p>${rating.Source} - ${rating.Value}</p>`;
+        }).join("")}
+                </div>
+                <div>
+                    <h3>Actors</h3>
+                    <p>${film.Actors}</p>
+                </div>
+                <div>
+                    <h3>Director</h3>
+                    <p>${film.Director}</p>
+                </div>
+                <div>
+                    <h3>Production</h3>
+                    <p>${film.Production}</p>
+                </div>
+                <div>
+                    <h3>Genre</h3>
+                    <p>${film.Genre}</p>
+                </div>
+            </div>
+        `;
+    }
+}
+exports.default = Film;
 
 },{"../core/cho":"cUbqm","../store/film":"iWLCk","@parcel/transformer-js/src/esmodule-helpers.js":"gkKU3"}]},["e11Rl","gLLPy"], "gLLPy", "parcelRequirec106")
 

@@ -66,7 +66,6 @@ export class Component {
         })
       }
     }
-
     subscribe(key, cb) {
       Array.isArray(this.observers[key])
         ? this.observers[key].push(cb)

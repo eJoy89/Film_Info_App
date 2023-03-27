@@ -21,6 +21,8 @@ export default class FilmListMore extends Component{
         this.el.textContent = 'View more...'
 
         this.el.addEventListener('click', async () => {
+            this.el.classList.add('hide')
+            // 클릭시 page 한개씩(10개 아이탬) 추가
             await searchFilms(filmeStore.state.page + 1)
         })
     }
