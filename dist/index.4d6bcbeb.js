@@ -679,6 +679,8 @@ exports.export = function(dest, destName, get) {
 var parcelHelpers = require("@parcel/transformer-js/src/esmodule-helpers.js");
 parcelHelpers.defineInteropFlag(exports);
 var _cho = require("../core/cho");
+var _about = require("../store/about");
+var _aboutDefault = parcelHelpers.interopDefault(_about);
 class Header extends (0, _cho.Component) {
     constructor(){
         super({
@@ -705,6 +707,7 @@ class Header extends (0, _cho.Component) {
         });
     }
     render() {
+        const { photo  } = (0, _aboutDefault.default).state;
         this.el.innerHTML = /* html */ `
             <a 
                 href='#/' class="logo">
@@ -732,17 +735,31 @@ class Header extends (0, _cho.Component) {
                 </ul>
             </nav>
             <a href="#/about" class="main_logo">
-                <img src="https://cdn-icons-png.flaticon.com/512/149/149071.png" alt="main_logo">
+                <img src="${photo}" alt="main_logo">
             </a>
         `;
     }
 }
 exports.default = Header;
 
+},{"../core/cho":"cUbqm","@parcel/transformer-js/src/esmodule-helpers.js":"gkKU3","../store/about":"4RAJO"}],"4RAJO":[function(require,module,exports) {
+var parcelHelpers = require("@parcel/transformer-js/src/esmodule-helpers.js");
+parcelHelpers.defineInteropFlag(exports);
+var _cho = require("../core/cho");
+exports.default = new (0, _cho.Store)({
+    photo: "https://i.ibb.co/h8v2tqN/4778bcbcf6e221e9005dd50904276ccf-sticker.png",
+    name: "Cho / Yunjae Cho",
+    email: "cho89@live.co.kr",
+    github: "https://github.com/eJoy89?tab=repositories",
+    notion: "https://ripe-dogsled-628.notion.site/Programme-27541e9ed6754a96932ab8cc378d8401"
+});
+
 },{"../core/cho":"cUbqm","@parcel/transformer-js/src/esmodule-helpers.js":"gkKU3"}],"8pPOA":[function(require,module,exports) {
 var parcelHelpers = require("@parcel/transformer-js/src/esmodule-helpers.js");
 parcelHelpers.defineInteropFlag(exports);
 var _cho = require("../core/cho");
+var _about = require("../store/about");
+var _aboutDefault = parcelHelpers.interopDefault(_about);
 class Footer extends (0, _cho.Component) {
     constructor(){
         super({
@@ -750,14 +767,15 @@ class Footer extends (0, _cho.Component) {
         });
     }
     render() {
+        const { github , notion  } = (0, _aboutDefault.default).state;
         this.el.innerHTML = /* html */ `
             <div>
-                <a href="https://naver.com">
+                <a href="${github}">
                     Github Repository
                 </a>
             </div>
             <div>
-                <a href="https://daum.net">
+                <a href="${notion}">
                     ${new Date().getFullYear()}
                     Cho
                 </a>
@@ -767,7 +785,7 @@ class Footer extends (0, _cho.Component) {
 }
 exports.default = Footer;
 
-},{"../core/cho":"cUbqm","@parcel/transformer-js/src/esmodule-helpers.js":"gkKU3"}],"3L9mC":[function(require,module,exports) {
+},{"../core/cho":"cUbqm","../store/about":"4RAJO","@parcel/transformer-js/src/esmodule-helpers.js":"gkKU3"}],"3L9mC":[function(require,module,exports) {
 var parcelHelpers = require("@parcel/transformer-js/src/esmodule-helpers.js");
 parcelHelpers.defineInteropFlag(exports);
 var _cho = require("../core/cho");
@@ -775,6 +793,8 @@ var _home = require("./Home");
 var _homeDefault = parcelHelpers.interopDefault(_home);
 var _film = require("./Film");
 var _filmDefault = parcelHelpers.interopDefault(_film);
+var _about = require("./About");
+var _aboutDefault = parcelHelpers.interopDefault(_about);
 exports.default = (0, _cho.createRouter)([
     {
         path: "#/",
@@ -783,10 +803,14 @@ exports.default = (0, _cho.createRouter)([
     {
         path: "#/film",
         component: (0, _filmDefault.default)
+    },
+    {
+        path: "#/about",
+        component: (0, _aboutDefault.default)
     }
 ]);
 
-},{"../core/cho":"cUbqm","@parcel/transformer-js/src/esmodule-helpers.js":"gkKU3","./Home":"0JSNG","./Film":"jaMp4"}],"0JSNG":[function(require,module,exports) {
+},{"../core/cho":"cUbqm","@parcel/transformer-js/src/esmodule-helpers.js":"gkKU3","./Home":"0JSNG","./Film":"jaMp4","./About":"gdB30"}],"0JSNG":[function(require,module,exports) {
 var parcelHelpers = require("@parcel/transformer-js/src/esmodule-helpers.js");
 parcelHelpers.defineInteropFlag(exports);
 var _cho = require("../core/cho");
@@ -1089,6 +1113,36 @@ class Film extends (0, _cho.Component) {
 }
 exports.default = Film;
 
-},{"../core/cho":"cUbqm","../store/film":"iWLCk","@parcel/transformer-js/src/esmodule-helpers.js":"gkKU3"}]},["e11Rl","gLLPy"], "gLLPy", "parcelRequirec106")
+},{"../core/cho":"cUbqm","../store/film":"iWLCk","@parcel/transformer-js/src/esmodule-helpers.js":"gkKU3"}],"gdB30":[function(require,module,exports) {
+var parcelHelpers = require("@parcel/transformer-js/src/esmodule-helpers.js");
+parcelHelpers.defineInteropFlag(exports);
+var _cho = require("../core/cho");
+var _about = require("../store/about");
+var _aboutDefault = parcelHelpers.interopDefault(_about);
+class About extends (0, _cho.Component) {
+    render() {
+        const { photo , name , email , github , notion  } = (0, _aboutDefault.default).state;
+        this.el.classList.add("container", "about");
+        this.el.innerHTML = /* html */ `
+            <div style="background-image: url(${photo})" class="photo"></div>
+            <p class="name">${name}</p>
+            <p>
+                <a 
+                    href="https://mail.google.com/mail/?view=cm&fs=1&to=${email}" 
+                    target="_blank">${email}
+                </a>
+            </p>
+            <p>
+                <a href="${github}" target="_blank">Github</a>
+            </p>
+            <p>
+                <a href="${notion}" target="_blank">Notion</a>
+            </p>
+        `;
+    }
+}
+exports.default = About;
+
+},{"../core/cho":"cUbqm","../store/about":"4RAJO","@parcel/transformer-js/src/esmodule-helpers.js":"gkKU3"}]},["e11Rl","gLLPy"], "gLLPy", "parcelRequirec106")
 
 //# sourceMappingURL=index.4d6bcbeb.js.map

@@ -1,4 +1,5 @@
 import { Component } from "../core/cho";
+import aboutStore from '../store/about';
 
 export default class Header extends Component{
     constructor() {
@@ -30,6 +31,8 @@ export default class Header extends Component{
     }
 
     render() {
+        const { photo } = aboutStore.state
+
         this.el.innerHTML = /* html */ `
             <a 
                 href='#/' class="logo">
@@ -57,7 +60,7 @@ export default class Header extends Component{
                 </ul>
             </nav>
             <a href="#/about" class="main_logo">
-                <img src="https://cdn-icons-png.flaticon.com/512/149/149071.png" alt="main_logo">
+                <img src="${photo}" alt="main_logo">
             </a>
         `
     }
