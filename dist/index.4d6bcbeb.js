@@ -570,15 +570,18 @@ root.append(new (0, _appDefault.default)().el);
 var parcelHelpers = require("@parcel/transformer-js/src/esmodule-helpers.js");
 parcelHelpers.defineInteropFlag(exports);
 var _cho = require("./core/cho");
+var _header = require("./components/Header");
+var _headerDefault = parcelHelpers.interopDefault(_header);
 class App extends (0, _cho.Component) {
     render() {
+        const Head = new (0, _headerDefault.default)().el;
         const routerView = document.createElement("router-view");
-        this.el.append(routerView);
+        this.el.append(Head, routerView);
     }
 }
 exports.default = App;
 
-},{"./core/cho":"cUbqm","@parcel/transformer-js/src/esmodule-helpers.js":"gkKU3"}],"cUbqm":[function(require,module,exports) {
+},{"./core/cho":"cUbqm","@parcel/transformer-js/src/esmodule-helpers.js":"gkKU3","./components/Header":"hsJbF"}],"cUbqm":[function(require,module,exports) {
 // Component
 var parcelHelpers = require("@parcel/transformer-js/src/esmodule-helpers.js");
 parcelHelpers.defineInteropFlag(exports);
@@ -669,7 +672,71 @@ exports.export = function(dest, destName, get) {
     });
 };
 
-},{}],"3L9mC":[function(require,module,exports) {
+},{}],"hsJbF":[function(require,module,exports) {
+var parcelHelpers = require("@parcel/transformer-js/src/esmodule-helpers.js");
+parcelHelpers.defineInteropFlag(exports);
+var _cho = require("../core/cho");
+class Header extends (0, _cho.Component) {
+    constructor(){
+        super({
+            tagName: "header",
+            state: {
+                menus: [
+                    {
+                        name: "Search",
+                        href: "#/"
+                    },
+                    {
+                        name: "Flim",
+                        href: "#/film?id=tt4520988"
+                    },
+                    {
+                        name: "About",
+                        href: "#/about"
+                    }
+                ]
+            }
+        });
+        window.addEventListener("popstate", ()=>{
+            this.render();
+        });
+    }
+    render() {
+        this.el.innerHTML = /* html */ `
+            <a 
+                href='#/' class="logo">
+                <span>OMDbAPI</span>    
+                .COM
+            </a>
+
+            <nav>
+                <ul>
+                    ${this.state.menus.map((menu)=>{
+            const href = menu.href.split("?")[0];
+            const hash = location.hash.split("?")[0];
+            const isActive = href === hash;
+            return /* html */ `
+                            <li>
+                                <a 
+                                href="${menu.href}"
+                                class="${isActive ? "active" : ""}"
+                                >
+                                    ${menu.name}
+                                </a>
+                            </li>
+                        `;
+        }).join("")}
+                </ul>
+            </nav>
+            <a href="#/about" class="main_logo">
+                <img src="https://cdn-icons-png.flaticon.com/512/149/149071.png" alt="main_logo">
+            </a>
+        `;
+    }
+}
+exports.default = Header;
+
+},{"../core/cho":"cUbqm","@parcel/transformer-js/src/esmodule-helpers.js":"gkKU3"}],"3L9mC":[function(require,module,exports) {
 var parcelHelpers = require("@parcel/transformer-js/src/esmodule-helpers.js");
 parcelHelpers.defineInteropFlag(exports);
 var _cho = require("../core/cho");
