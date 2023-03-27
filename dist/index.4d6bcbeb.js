@@ -572,16 +572,19 @@ parcelHelpers.defineInteropFlag(exports);
 var _cho = require("./core/cho");
 var _header = require("./components/Header");
 var _headerDefault = parcelHelpers.interopDefault(_header);
+var _footer = require("./components/Footer");
+var _footerDefault = parcelHelpers.interopDefault(_footer);
 class App extends (0, _cho.Component) {
     render() {
         const Head = new (0, _headerDefault.default)().el;
+        const Foot = new (0, _footerDefault.default)().el;
         const routerView = document.createElement("router-view");
-        this.el.append(Head, routerView);
+        this.el.append(Head, routerView, Foot);
     }
 }
 exports.default = App;
 
-},{"./core/cho":"cUbqm","@parcel/transformer-js/src/esmodule-helpers.js":"gkKU3","./components/Header":"hsJbF"}],"cUbqm":[function(require,module,exports) {
+},{"./core/cho":"cUbqm","@parcel/transformer-js/src/esmodule-helpers.js":"gkKU3","./components/Header":"hsJbF","./components/Footer":"8pPOA"}],"cUbqm":[function(require,module,exports) {
 // Component
 var parcelHelpers = require("@parcel/transformer-js/src/esmodule-helpers.js");
 parcelHelpers.defineInteropFlag(exports);
@@ -735,6 +738,34 @@ class Header extends (0, _cho.Component) {
     }
 }
 exports.default = Header;
+
+},{"../core/cho":"cUbqm","@parcel/transformer-js/src/esmodule-helpers.js":"gkKU3"}],"8pPOA":[function(require,module,exports) {
+var parcelHelpers = require("@parcel/transformer-js/src/esmodule-helpers.js");
+parcelHelpers.defineInteropFlag(exports);
+var _cho = require("../core/cho");
+class Footer extends (0, _cho.Component) {
+    constructor(){
+        super({
+            tagName: "footer"
+        });
+    }
+    render() {
+        this.el.innerHTML = /* html */ `
+            <div>
+                <a href="https://naver.com">
+                    Github Repository
+                </a>
+            </div>
+            <div>
+                <a href="https://daum.net">
+                    ${new Date().getFullYear()}
+                    Cho
+                </a>
+            </div>
+        `;
+    }
+}
+exports.default = Footer;
 
 },{"../core/cho":"cUbqm","@parcel/transformer-js/src/esmodule-helpers.js":"gkKU3"}],"3L9mC":[function(require,module,exports) {
 var parcelHelpers = require("@parcel/transformer-js/src/esmodule-helpers.js");
